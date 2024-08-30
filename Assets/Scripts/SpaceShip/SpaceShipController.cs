@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
 
 public enum StatesEnumCuatro
 {
@@ -26,7 +26,8 @@ public class SpaceShipController : MonoBehaviour
     public int maxCartuchos; //Cantidad máxima de cartuchos
     private Stack<int> municion; //Pila para la munición
     private Queue<int> cartuchos; //Cola para los cartuchos
-    
+    public AudioClip shotSound;
+    private AudioSource audioSource;
     private void Awake()
     {
         InitializeFSM();
@@ -49,6 +50,7 @@ public class SpaceShipController : MonoBehaviour
     {
         shipTr = this.transform;
         shipRb = GetComponent<Rigidbody>();
+        audioSource = GetComponent<AudioSource>();
         //Inicializamos las pilas y colas
         municion = new Stack<int>();
         cartuchos = new Queue<int>();
@@ -82,6 +84,8 @@ public class SpaceShipController : MonoBehaviour
         {
             //Disminuye la munición
             municion.Pop();
+            //Reproducir sonido
+            if (audioSource != null && shotSound != null) audioSource.PlayOneShot(shotSound);
             if (shotPrefab != null && shotSpawnPoint != null) Instantiate(shotPrefab, shotSpawnPoint.position, shotSpawnPoint.rotation);
         }
         else Debug.Log("Sin munición. Recarga!");
@@ -102,5 +106,9 @@ public class SpaceShipController : MonoBehaviour
     public void QuitGame()
     {
         Application.Quit();
+    }
+    public void TakeDamage(float damage)
+    {
+        currentHealth -= damage;
     }
 }
